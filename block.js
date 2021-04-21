@@ -2,14 +2,19 @@
 
 const block_size = 8;
 const waku_size = block_size * 6;
-const yoko = 10;
 const gap = block_size;
 const origin_x = waku_size / 2;
 const origin_y = waku_size / 2;
-const list_height = waku_size * Math.ceil(33 / yoko) + gap;
+let yoko = 10;
+let list_height = waku_size * Math.ceil(33 / yoko) + gap;
 
 let selected_block_list = [NaN, NaN, NaN, NaN];
 let selectable_pattern_list = all_pattern_list;
+
+function initialize_block_size(width, height) {
+    yoko = Math.floor((width - origin_x - origin_x) / waku_size);
+    list_height = waku_size * Math.ceil(33 / yoko) + gap;
+}
 
 function search_rotate_pattern(search_pattern) {
     let result = [];
@@ -121,4 +126,17 @@ function count_rotate_pattern_list() {
         }
     }
     console.log(counter - counter2 - counter1, counter2, counter1);
+}
+
+function count_pattern_list() {
+    let counter0 = 0;
+    let counter = 0;
+    for (let pattern of all_pattern_list) {
+        if (pattern[0] === 0) {
+            counter0++;
+            } else if (pattern[0] <= 16) {
+            counter++;
+        }
+    }
+    console.log(counter0, counter, counter0 + counter * 2);
 }

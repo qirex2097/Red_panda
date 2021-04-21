@@ -1,41 +1,45 @@
 'use strict';
 
+let draw_func;
+let click_func;
 function setup() {
-  createCanvas(640, 1024);
+  createCanvas(windowWidth, windowHeight);
+    initialize_block_size(windowWidth, windowHeight);
+  draw_func = draw_block;
+  click_func = select_block;
+  //draw_func = canada_draw;
+  //click_func = canada_click;
 }
 
 let uniq_pattern_no = 0;
 let patterns = [];
 function draw() {
   background(220);
-
-  if (frameCount % 10 === 0) {
-    uniq_pattern_no++;
-    if (uniq_pattern_no >= uniq_pattern_list.length) {
-      uniq_pattern_no = 0;
-    }
-    patterns = search_rotate_pattern(uniq_pattern_list[uniq_pattern_no]);
-  }
-  draw_block(patterns);
+  draw_func();
 }
 
 function mouseClicked() {
-  select_block(mouseX, mouseY);
+  click_func(mouseX, mouseY);
 }
 
+function draw_block_waku(x, y) {
+  //noFill();
+  fill(255);
+  rect(x + Math.floor(block_size / 2), y + Math.floor(block_size / 2), block_size * 5);
+}
 function draw_block_sub(block, x, y, c1=color(255)) {
-    for (const pos of block) {
-        const pos_x = pos % 5;
-        const pos_y = Math.floor(pos / 5);
-        const offset_x = x + pos_x * block_size + Math.floor(block_size / 2);
-        const offset_y = y + pos_y * block_size + Math.floor(block_size / 2);
+  for (const pos of block) {
+      const pos_x = pos % 5;
+      const pos_y = Math.floor(pos / 5);
+      const offset_x = x + pos_x * block_size + Math.floor(block_size / 2);
+      const offset_y = y + pos_y * block_size + Math.floor(block_size / 2);
 
-        fill(c1);
-        rect(offset_x, offset_y, block_size);
-    }
+      fill(c1);
+      rect(offset_x, offset_y, block_size);
+  }
 }
 
-function draw_block(patterns) {
+function draw_block() {
   let color_list = [color(200,100,50),color(50,200,100),color(200,200,50), color(100,100,200)];
   for (let corner_no = 0; corner_no < 4; corner_no++) {
     const offset_x = origin_x;
