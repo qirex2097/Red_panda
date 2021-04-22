@@ -1,6 +1,13 @@
 let selected_block = NaN;
-const canada_yoko = 20;
+let canada_yoko;
 let canada_pattern_block_list = [];
+
+function initialize_canada(width, height) {
+    canada_yoko = Math.floor(width / waku_size);
+    return [canada_draw, canada_click];
+}
+
+
 function canada_draw() {
     const color_list = [color(200,100,50),color(50,200,100),color(200,200,50), color(100,100,200)];
     let offset_x = 0;
@@ -14,16 +21,15 @@ function canada_draw() {
     }
     rect(offset_x, offset_y,waku_size);
     draw_block_sub(block_pattern_list[0][0], offset_x, offset_y);
-    pos ++;
+    pos++;
     pos = Math.floor((pos + canada_yoko - 1) / canada_yoko) * canada_yoko;
     offset_x = waku_size * (pos % canada_yoko);
     offset_y = waku_size * Math.floor(pos / canada_yoko);
     let local_pos = 0;
-    for (let i = 1; i <= 16; i++) {
+    for (let i = 1; i <= 32; i++) {
         const block_pattern = block_pattern_list[0][i];
         const x = offset_x + waku_size * (local_pos % canada_yoko);
         const y = offset_y + waku_size * Math.floor(local_pos / canada_yoko);
-
         if (selected_block === i) {
             fill(color(200, 100, 50));
         } else {
@@ -32,7 +38,11 @@ function canada_draw() {
         rect(x, y, waku_size);
         draw_block_sub(block_pattern, x, y);
         local_pos++;
+        if (i === 16) {
+            local_pos = Math.floor((local_pos + canada_yoko - 1) / canada_yoko) * canada_yoko;
+        }
     }
+
     pos += local_pos;
     pos = Math.floor((pos + canada_yoko - 1) / canada_yoko) * canada_yoko;
     offset_x = waku_size * (pos % canada_yoko);
@@ -43,30 +53,28 @@ function canada_draw() {
             pos = Math.floor((pos + canada_yoko - 1) / canada_yoko) * canada_yoko;
             offset_x = waku_size * (pos % canada_yoko);
             offset_y = waku_size * Math.floor(pos / canada_yoko);
-            pos += draw_selected_symmetric_block(offset_x, offset_y);
+//            pos += draw_selected_symmetric_block(offset_x, offset_y);
        }
     }
     fill(0);
     textAlign(LEFT, TOP);
-    let moji = canada_pattern_block_list.length + "/" + displayWidth + "/" + displayHeight + "/" + windowWidth + "/" + windowHeight;
+    let moji = canada_pattern_block_list.length;
     text(moji, waku_size + block_size, 0)
 }
 
 function canada_click(x, y) {
     const pos_x = Math.floor(x / waku_size);
     const pos_y = Math.floor(y / waku_size);
-    if (pos_x >= canada_yoko || pos_y > 1 + Math.floor(16 / canada_yoko)) {
-        return;
-    }
+
     let num = NaN;
     if (pos_x === 0 && pos_y === 0) {
         num = 0;
-    } else if (1 <= pos_y && pos_y <= 2) {
-        num = 1 + pos_x % canada_yoko + (pos_y - 1) * canada_yoko;
+    } else if (pos_x <= 15 && 1 <= pos_y && pos_y <= 2) {
+        num = 1 + pos_x % 16 + (pos_y - 1) * 16;
     } else {
         return;
     }
-    if (num < 0 || 16 < num) {
+    if (num < 0 || 32 < num) {
         return;
     }
     if (selected_block === num) {

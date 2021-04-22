@@ -6,35 +6,74 @@ const gap = block_size;
 const origin_x = waku_size / 2;
 const origin_y = waku_size / 2;
 let yoko = 10;
-let list_height = waku_size * Math.ceil(33 / yoko) + gap;
+let color_list;
 
 let selected_block_list = [NaN, NaN, NaN, NaN];
 let selectable_pattern_list = all_pattern_list;
 
 function initialize_block_size(width, height) {
+    color_list = [color(200,100,50), color(50,200,100), color(200,200,50), color(100,100,200)];
     yoko = Math.floor((width - origin_x - origin_x) / waku_size);
-    list_height = waku_size * Math.ceil(33 / yoko) + gap;
+    return [draw_block, select_block];
 }
 
-function search_rotate_pattern(search_pattern) {
-    let result = [];
-    for (let i = 0; i < 4; i++) {
-        const search_moji = search_pattern.toString();
-        for (let j = 0; j < all_pattern_list.length; j++) {
-            if (all_pattern_list[j].toString() !== search_moji) {
-                continue;
-            }
-            if (result.indexOf(j) === -1) {
-                result.push(j);
-            }
-            break;
-        }
-        search_pattern = [search_pattern[3], search_pattern[0], search_pattern[1], search_pattern[2]];
-    }
-    return result;
+function get_list_height(kazu=33) {
+    return waku_size * Math.ceil(kazu / yoko) + gap;
 }
+
+function draw_block_sub(block, x, y, c1=color(255)) {
+  for (const pos of block) {
+      const pos_x = pos % 5;
+      const pos_y = Math.floor(pos / 5);
+      const offset_x = x + pos_x * block_size + Math.floor(block_size / 2);
+      const offset_y = y + pos_y * block_size + Math.floor(block_size / 2);
+
+      fill(c1);
+      rect(offset_x, offset_y, block_size);
+  }
+}
+
+
+function draw_block() {
+    const list_height = get_list_height();
+    let offset_x = origin_x;
+    let offset_y = origin_y;
+
+    for (let corner_no = 0; corner_no < 4; corner_no++) {
+        for (let i = 0; i < block_pattern_list[corner_no].length; i++) {
+            const block = block_pattern_list[corner_no][i];
+            let c1 = color(255);
+            const x = offset_x + (i % yoko) * waku_size;
+            const y = offset_y + Math.floor(i / yoko) * waku_size;
+            
+            if (selected_block_list[corner_no] === i) {
+                c1 = color_list[corner_no];
+            } else {
+                let tmp_selected_block_list = selected_block_list.slice();
+                tmp_selected_block_list[corner_no] = i;
+                if (!isSelectableBlock(tmp_selected_block_list)) {
+                    c1 = color(200);
+                }
+            }
+            fill(c1);
+            stroke(0);
+            rect(x, y, waku_size);
+            draw_block_sub(block, x, y);
+        }
+        offset_y += list_height;
+    }
+    
+    if (selected_block_list.filter(num => !Number.isNaN(num)).length > 0) {
+        draw_selected_blocks(offset_x, offset_y);
+    }
+    if (!selected_block_list.some(num => Number.isNaN(num))) {
+        draw_rotate_blocks(origin_x + waku_size, offset_y);
+    }
+}
+
 
 function select_block(x, y) {
+    const list_height = get_list_height();
     const pos_x = Math.floor((x - origin_x) / waku_size);
     const pos_y = Math.floor(((y - origin_y) % list_height) / waku_size);
     const corner_no = Math.floor((y - origin_y) / list_height);
@@ -55,6 +94,56 @@ function select_block(x, y) {
     }
 
     selectable_pattern_list = rebuild_selectable_pattern_list();
+}
+
+
+function draw_selected_blocks(x, y) {
+    fill(255);
+    noStroke();
+    rect(x, y, waku_size);
+    for (let corner_no = 0; corner_no < 4; corner_no++) {
+        if (Number.isNaN(selected_block_list[corner_no])) {
+            continue;
+        }
+        const block = block_pattern_list[corner_no][selected_block_list[corner_no]];
+        draw_block_sub(block, x, y, color_list[corner_no]);
+    }
+    
+    let moji = '';
+    for (let i = 0; i < selected_block_list.length; i++) {
+        if (Number.isNaN(selected_block_list[i])) {
+            moji += '-';
+        } else {
+            moji += selected_block_list[i];
+        }
+        if (i < selected_block_list.length - 1) {
+            moji += ',';
+        }
+    }
+    fill(0);
+    textAlign(LEFT, TOP);
+    text(moji, x, y + waku_size);
+    text(selectable_pattern_list.length, x, y + waku_size + block_size * 2);
+        
+}
+
+function draw_rotate_blocks(x, y) {
+    x = x + waku_size;
+    const rotate_pattern_list = get_rotate_pattern_list(selected_block_list);
+    let tmp_color_list = color_list.slice();
+    for (let pattern of rotate_pattern_list) {
+        x = x + waku_size;
+        fill(255);
+        noStroke();
+        rect(x, y, waku_size);
+        for (let corner_no = 0; corner_no < 4; corner_no++) {
+            const block = block_pattern_list[corner_no][pattern[corner_no]];
+            draw_block_sub(block, x, y, tmp_color_list[corner_no]);
+        }
+        tmp_color_list = [tmp_color_list[3], ...tmp_color_list.slice(0,3)];
+        fill(0);
+        text(get_pattern_no(pattern), x + block_size, y + waku_size);
+    }
 }
 
 const isSelectableBlock = (block) => {
@@ -80,6 +169,25 @@ function get_pattern_no(pattern) {
     }
     return NaN;
 }
+
+function search_rotate_pattern(search_pattern) {
+    let result = [];
+    for (let i = 0; i < 4; i++) {
+        const search_moji = search_pattern.toString();
+        for (let j = 0; j < all_pattern_list.length; j++) {
+            if (all_pattern_list[j].toString() !== search_moji) {
+                continue;
+            }
+            if (result.indexOf(j) === -1) {
+                result.push(j);
+            }
+            break;
+        }
+        search_pattern = [search_pattern[3], search_pattern[0], search_pattern[1], search_pattern[2]];
+    }
+    return result;
+}
+
 
 function get_rotate_pattern_list(pattern) {
     let result = [];
