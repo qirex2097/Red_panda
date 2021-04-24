@@ -13,6 +13,6 @@ function draw() {
   draw_func();
 }
 
-function mouseClicked() {
-  click_func(mouseX, mouseY);
+function touchStarted() {
+    click_func(mouseX, mouseY);
 }
