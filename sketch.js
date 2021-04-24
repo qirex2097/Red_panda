@@ -14,5 +14,26 @@ function draw() {
 }
 
 function touchStarted() {
+    clicked();
+}
+function mousePressed() {
+    clicked();
+}
+function mouseReleased() {
+    released();
+}
+function mouseEnded() {
+    released();
+}
+
+let mouse_status = false;
+function clicked() {
+    if (mouse_status) {
+        return;
+    }
     click_func(mouseX, mouseY);
+    mouse_status = true;
+}
+function released() {
+    mouse_status = false;
 }
