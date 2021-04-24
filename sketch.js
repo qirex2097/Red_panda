@@ -16,13 +16,13 @@ function draw() {
 function touchStarted() {
     clicked();
 }
+function touchEnded() {
+    released();
+}
 function mousePressed() {
     clicked();
 }
 function mouseReleased() {
-    released();
-}
-function mouseEnded() {
     released();
 }
 
