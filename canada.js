@@ -106,8 +106,8 @@ function draw_selected_block(offset_x, offset_y) {
         const x = offset_x + waku_size * (local_pos % canada_yoko);
         const y = offset_y + waku_size * Math.floor(local_pos / canada_yoko);
         fill(230);
-//        rect(x, y, waku_size);
-        draw_block_waku(x, y);
+        rect(x, y, waku_size);
+//        draw_block_waku(x, y);
         push();
         noStroke();
         for (let i = 0; i < 4; i++) {
@@ -128,8 +128,8 @@ function draw_selected_symmetric_block(offset_x, offset_y) {
         const x = offset_x + waku_size * (local_pos % canada_yoko);
         const y = offset_y + waku_size * Math.floor(local_pos / canada_yoko);
         fill(255);
-//        rect(x, y, waku_size);
-        draw_block_waku(x, y);
+        rect(x, y, waku_size);
+//        draw_block_waku(x, y);
         push();
         noStroke();
         let tmp_block_list = [block_list[0], block_list[3], block_list[2], block_list[1]];

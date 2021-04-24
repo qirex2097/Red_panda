@@ -4,7 +4,7 @@ let draw_func;
 let click_func;
 function setup() {
     createCanvas(windowWidth, windowHeight);
-    //[draw_func, click_func] = initialize_canada(windowWidth, windowHeight);
+//    [draw_func, click_func] = initialize_canada(windowWidth, windowHeight);
     [draw_func, click_func] = initialize_block_size(windowWidth, windowHeight);
 }
 

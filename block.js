@@ -1,10 +1,10 @@
 'use strict';
 
-const block_size = 8;
+const block_size = 10;
 const waku_size = block_size * 6;
 const gap = block_size;
-const origin_x = waku_size / 2;
-const origin_y = waku_size / 2;
+const origin_x = block_size * 2;
+const origin_y = block_size * 2;
 let yoko = 10;
 let color_list;
 
@@ -12,8 +12,12 @@ let selected_block_list = [NaN, NaN, NaN, NaN];
 let selectable_pattern_list = all_pattern_list;
 
 function initialize_block_size(width, height) {
+    textSize(14);
     color_list = [color(200,100,50), color(50,200,100), color(200,200,50), color(100,100,200)];
-    yoko = Math.floor((width - origin_x - origin_x) / waku_size);
+    yoko = 11;
+    if (height < get_list_height() * 4 + waku_size * 2) {
+        yoko = Math.floor((width - origin_x - origin_x) / waku_size);
+    }
     return [draw_block, select_block];
 }
 
@@ -120,19 +124,17 @@ function draw_selected_blocks(x, y) {
             moji += ',';
         }
     }
+    moji += '/' + selectable_pattern_list.length;
     fill(0);
     textAlign(LEFT, TOP);
     text(moji, x, y + waku_size);
-    text(selectable_pattern_list.length, x, y + waku_size + block_size * 2);
-        
 }
 
 function draw_rotate_blocks(x, y) {
-    x = x + waku_size;
     const rotate_pattern_list = get_rotate_pattern_list(selected_block_list);
     let tmp_color_list = color_list.slice();
     for (let pattern of rotate_pattern_list) {
-        x = x + waku_size;
+        x = x + waku_size + block_size * 3;
         fill(255);
         noStroke();
         rect(x, y, waku_size);
@@ -140,9 +142,11 @@ function draw_rotate_blocks(x, y) {
             const block = block_pattern_list[corner_no][pattern[corner_no]];
             draw_block_sub(block, x, y, tmp_color_list[corner_no]);
         }
+        const moji = pattern[0]+','+pattern[1]+','+pattern[2]+','+pattern[3];
         tmp_color_list = [tmp_color_list[3], ...tmp_color_list.slice(0,3)];
         fill(0);
-        text(get_pattern_no(pattern), x + block_size, y + waku_size);
+        text(moji, x, y + waku_size);
+        text('No. '+get_pattern_no(pattern), x, y + waku_size + block_size * 2);
     }
 }
 
