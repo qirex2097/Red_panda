@@ -1,10 +1,10 @@
 'use strict';
 
-const block_size = 10;
-const waku_size = block_size * 6;
-const gap = block_size;
-const origin_x = block_size * 2;
-const origin_y = block_size * 2;
+let block_size = 10;
+let waku_size = block_size * 6;
+let gap = block_size;
+let origin_x = block_size * 2;
+let origin_y = block_size * 2;
 let yoko = 10;
 let color_list;
 
@@ -12,7 +12,18 @@ let selected_block_list = [NaN, NaN, NaN, NaN];
 let selectable_pattern_list = all_pattern_list;
 
 function initialize_block_size(width, height) {
-    textSize(14);
+    if (width < waku_size * 11) {
+        block_size = 5;
+        textSize(8);
+    } else {
+        block_size = 10;
+        textSize(14);
+    }
+    waku_size = block_size * 6;
+    gap = block_size;
+    origin_x = block_size * 2;
+    origin_y = block_size * 2;
+    
     color_list = [color(200,100,50), color(50,200,100), color(200,200,50), color(100,100,200)];
     yoko = 11;
     if (height < get_list_height() * 4 + waku_size * 2) {
