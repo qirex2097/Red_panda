@@ -60,6 +60,7 @@ function draw_block() {
             let c1 = color(255);
             const x = offset_x + (i % yoko) * waku_size;
             const y = offset_y + Math.floor(i / yoko) * waku_size;
+	    let flg = true;
             
             if (selected_block_list[corner_no] === i) {
                 c1 = color_list[corner_no];
@@ -67,13 +68,26 @@ function draw_block() {
                 let tmp_selected_block_list = selected_block_list.slice();
                 tmp_selected_block_list[corner_no] = i;
                 if (!isSelectableBlock(tmp_selected_block_list)) {
+		    flg = false;
                     c1 = color(200);
                 }
             }
-            fill(c1);
+	    if (flg) {
+		fill(c1);
+	    } else {
+		fill(color(200));
+	    }
             stroke(0);
             rect(x, y, waku_size);
             draw_block_sub(block, x, y);
+	    if (flg) {
+		const corner_offset_x = [block_size * 2, -block_size * 2, -block_size * 2, block_size * 2];
+		const corner_offset_y = [block_size * 2, block_size * 2, -block_size * 2, -block_size * 2];
+		fill('BLACK');
+		stroke('BLACK');
+		textAlign(CENTER, CENTER);
+		text(i, x + waku_size / 2 + corner_offset_x[corner_no], y + waku_size / 2 + corner_offset_y[corner_no]);
+	    }
         }
         offset_y += list_height;
     }
